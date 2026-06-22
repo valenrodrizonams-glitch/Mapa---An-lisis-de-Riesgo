@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Correría Fuerza de Ventas — Colombia</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bajo: #7D8C6B;
+  --bajo-light: #edf0e8;
+  --medio: #E8B84B;
+  --medio-light: #fdf6e0;
+  --alto: #E05A1A;
+  --alto-light: #fdeee5;
+  --header-bg: #042B0B;
+  --font-main: 'Barlow', sans-serif;
+  --font-display: 'Barlow Condensed', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-main); background: #F7EFE6; color: #1a1a1a; min-height: 100vh; }
+
+header {
+  background: var(--header-bg); color: #fff;
+  padding: 10px 24px; display: flex; align-items: center; gap: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,.3); position: sticky; top: 0; z-index: 1000;
+}
+header .logo-icon { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #F7EFE6; }
+header h1 { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: #F7EFE6; }
+header p { font-size: 10px; color: rgba(247, 239, 230, 0.8); margin-top: 1px; }
+
+.brand-logos { margin-left: auto; display: flex; align-items: center; gap: 28px; }
+.logo-opella { display: flex; align-items: center; gap: 8px; }
+.opella-text { font-family: var(--font-main); font-size: 26px; font-weight: 700; color: #F6F3EB; letter-spacing: -0.5px; }
+.opella-tag { display: flex; flex-direction: column; line-height: 1.1; border-left: 1px solid rgba(246, 243, 235, 0.3); padding-left: 8px; }
+.opella-tag .bold-t { font-size: 11px; font-weight: 700; color: #F6F3EB; }
+.opella-tag .light-t { font-size: 11px; font-weight: 400; color: #F6F3EB; }
+.logo-csi { display: flex; align-items: center; gap: 6px; }
+.csi-text { font-family: var(--font-main); font-size: 26px; font-weight: 800; color: #F6F3EB; letter-spacing: -0.5px; }
+.csi-tag { display: flex; flex-direction: column; line-height: 1.1; }
+.csi-tag .gold-t { font-size: 11px; font-weight: 700; color: #F6F3EB; }
+.csi-tag .light-t { font-size: 11px; font-weight: 400; color: #F6F3EB; }
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  gap: 14px;
+  padding: 14px 18px;
+  height: calc(100vh - 60px);
+}
+.left-column { display: flex; flex-direction: column; gap: 14px; height: 100%; }
+#map-container { position: relative; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,.18); border: 3px solid var(--header-bg); flex: 1; min-height: 350px; }
+#map { width: 100%; height: 100%; }
+
+/* Filtro flotante del mapa */
+.map-filter-control {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  background: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  border: 2px solid var(--header-bg);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.map-filter-control label {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--header-bg);
+  text-transform: uppercase;
+}
+.map-filter-control select {
+  font-family: var(--font-main);
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  outline: none;
+  cursor: pointer;
+  background: #fdfdfd;
+}
+
+.security-box { background: white; border-radius: 14px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,.1); border: 2px solid #dde0da; }
+.security-box h2 { font-family: var(--font-display); font-size: 18px; color: var(--header-bg); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #edf0e8; padding-bottom: 6px; }
+.security-layout { display: grid; grid-template-columns: 1fr 330px; gap: 16px; }
+.rec-list { font-size: 12px; line-height: 1.5; color: #333; }
+.rec-list ul, .rec-list ol { padding-left: 18px; }
+.rec-list li { margin-bottom: 5px; }
+
+.cecom-card { background: #F9F6F0; border: 1px solid #e2ded5; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cecom-info { display: flex; flex-direction: column; }
+.cecom-title { font-size: 16px; font-weight: 800; color: #042B0B; }
+.cecom-sub { font-size: 11px; font-weight: 600; font-style: italic; color: #042B0B; margin-bottom: 8px; }
+.cecom-link { font-size: 12px; font-weight: 700; color: #042B0B; text-decoration: none; margin-top: 2px; }
+.cecom-link:hover { text-decoration: underline; }
+.cecom-qr-wrapper { width: 86px; height: 86px; background: white; border: 1px solid #ccc; padding: 5px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+.cecom-qr-wrapper img { width: 100% !important; height: 100% !important; }
+
+.risk-panel { display: flex; flex-direction: column; background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.10); border: 2px solid #dde0da; height: 100%; }
+.risk-tabs { display: flex; border-bottom: 2px solid #e0e0e0; background: #f8f9f6; flex-shrink: 0; }
+.risk-tab { flex: 1; padding: 10px 4px; font-family: var(--font-display); font-size: 12px; font-weight: 700; text-align: center; cursor: pointer; border: none; background: transparent; letter-spacing: .4px; transition: all .2s; border-bottom: 3px solid transparent; margin-bottom: -2px; text-transform: uppercase; }
+.risk-tab.bajo { color: var(--bajo); }
+.risk-tab.bajo.active { background: var(--bajo-light); border-bottom-color: var(--bajo); }
+.risk-tab.medio { color: #b87d00; }
+.risk-tab.medio.active { background: var(--medio-light); border-bottom-color: var(--medio); }
+.risk-tab.alto { color: var(--alto); }
+.risk-tab.alto.active { background: var(--alto-light); border-bottom-color: var(--alto); }
+.risk-content { flex: 1; overflow-y: auto; padding: 10px; display: none; }
+.risk-content.active { display: block; }
+
+.info-banner { padding: 7px 10px; border-radius: 8px; margin-bottom: 12px; font-size: 11px; font-weight: 600; line-height: 1.4; }
+.info-banner.alto { background: var(--alto-light); color: #8b2500; border-left: 3px solid var(--alto); }
+.info-banner.medio { background: var(--medio-light); color: #7a5200; border-left: 3px solid var(--medio); }
+.info-banner.bajo { background: var(--bajo-light); color: #3a4a2f; border-left: 3px solid var(--bajo); }
+
+.dept-card { border-radius: 10px; margin-bottom: 14px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,.08); border: 1px solid rgba(0,0,0,.08); background: #fafafa; }
+.dept-card.bajo .dept-header { background: var(--bajo); }
+.dept-card.medio .dept-header { background: var(--medio); }
+.dept-card.alto .dept-header { background: var(--alto); }
+.dept-header { padding: 10px 14px; color: white; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: filter 0.2s; }
+.dept-header:hover { filter: brightness(1.1); }
+.dept-name { font-family: var(--font-display); font-size: 16px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+.dept-name .zoom-hint { font-size: 10px; font-weight: 500; opacity: 0.8; background: rgba(255,255,255,0.2); padding: 1px 5px; border-radius: 4px; }
+.dept-count { background: rgba(255,255,255,.25); border-radius: 12px; padding: 2px 8px; font-family: var(--font-display); font-size: 12px; font-weight: 700; }
+.dept-body { padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+
+.muni-mini-box { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); transition: background-color 0.2s; }
+.muni-mini-box:hover { background-color: #fcfbfa; border-color: #d0d0d0; }
+.muni-top-info { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; border-bottom: 1px dashed #f0f0f0; padding-bottom: 4px; }
+.muni-name { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: #222; cursor: pointer; text-decoration: underline dotted; }
+.muni-name:hover { color: #042B0B; }
+.muni-rep { font-size: 10px; color: #666; font-style: italic; }
+.muni-pts { font-size: 10px; font-weight: 700; color: #444; background: #eee; padding: 1px 5px; border-radius: 4px; }
+
+.store-row { display: flex; flex-direction: column; padding: 4px 0; font-size: 10.5px; border-bottom: 1px solid #f9f9f9; cursor: pointer; border-radius: 3px; transition: background 0.15s; padding-left: 4px; }
+.store-row:last-child { border-bottom: none; }
+.store-row:hover { background: #f0f4ee; }
+.store-name { font-weight: 600; color: #333; }
+.store-addr { color: #888; font-size: 9.5px; }
+
+/* Marcadores de Tiendas con escala adaptativa */
+.custom-marker { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  width: 100%; 
+  height: 100%; 
+  border-radius: 50%; 
+  color: white; 
+  box-shadow: 0 2px 8px rgba(0,0,0,.35); 
+  border: 2px solid white;
+  transition: width 0.2s, height 0.2s;
+}
+
+.leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 4px 18px rgba(0,0,0,.2); }
+.leaflet-popup-content { margin: 0; padding: 0; font-family: var(--font-main); min-width: 280px; }
+.popup-header { padding: 10px 14px; color: white; font-family: var(--font-display); font-size: 16px; font-weight: 800; border-radius: 10px 10px 0 0; }
+.popup-sub { font-size: 11px; font-weight: 500; opacity: .9; margin-top: 2px; }
+.popup-rows { padding: 8px 14px 10px; }
+.popup-row { font-size: 11.5px; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+.popup-row:last-child { border-bottom: none; }
+.popup-dname { font-weight: 600; display: block; }
+.popup-addr { color: #777; font-size: 10px; }
+.popup-medidas { margin: 0 14px 10px; padding: 7px 10px; border-radius: 6px; font-size: 11px; line-height: 1.4; }
+.popup-medidas.alto { background: #fdeee5; color: #8b2500; border-left: 3px solid var(--alto); }
+.popup-medidas.medio { background: #fdf6e0; color: #7a5200; border-left: 3px solid var(--medio); }
+.popup-medidas.bajo { background: #edf0e8; color: #3a4a2f; border-left: 3px solid var(--bajo); }
+
+/* Leyenda flotante del mapa */
+.map-legend-control {
+  position: absolute;
+  bottom: 24px;
+  left: 12px;
+  z-index: 1000;
+  background: rgba(255,255,255,0.97);
+  padding: 10px 13px;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+  border: 2px solid var(--header-bg);
+  min-width: 170px;
+}
+.map-legend-control .legend-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--header-bg);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 7px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.map-legend-control .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-family: var(--font-main);
+  font-size: 11.5px;
+  color: #333;
+}
+.map-legend-control .legend-item:last-child { margin-bottom: 0; }
+.legend-pin {
+  width: 12px;
+  height: 15px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  flex-shrink: 0;
+}
+.legend-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+.legend-sep {
+  border: none;
+  border-top: 1px dashed #ddd;
+  margin: 6px 0;
+}
+.dept-tooltip {
+  font-family: 'Barlow Condensed', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #042B0B !important;
+  background: rgba(255,255,255,0.95) !important;
+  border: 1px solid #042B0B !important;
+  border-radius: 5px !important;
+  padding: 3px 8px !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+  white-space: nowrap !important;
+  letter-spacing: 0.3px !important;
+}
+.dept-tooltip::before { border-top-color: #042B0B !important; }
+
+/* Contenedor de Pines adaptativos */
+.dept-pin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.dept-pin-container svg {
+  transition: width 0.2s, height 0.2s;
+}
+
+/* ── ALERTA DE RESTRICCIÓN ────────────────────────────────────────────────── */
+.alert-restriccion {
+  background: linear-gradient(135deg, #1a0000 0%, #5c0a00 100%);
+  border-bottom: 3px solid #E05A1A;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.alert-restriccion::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 12px,
+    rgba(224, 90, 26, 0.07) 12px,
+    rgba(224, 90, 26, 0.07) 24px
+  );
+  pointer-events: none;
+}
+.alert-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  animation: pulse-icon 1.8s ease-in-out infinite;
+}
+@keyframes pulse-icon {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+.alert-body {
+  flex: 1;
+  min-width: 0;
+}
+.alert-titulo {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: #FF6B35;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.alert-mensaje {
+  font-family: var(--font-main);
+  font-size: 12px;
+  color: #F7EFE6;
+  line-height: 1.5;
+}
+.alert-mensaje strong {
+  color: #FFD166;
+  font-weight: 700;
+}
+.alert-badge {
+  flex-shrink: 0;
+  background: #E05A1A;
+  border-radius: 8px;
+  padding: 6px 12px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.alert-badge .badge-date {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+.alert-badge .badge-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* ── Botón flotante de Referencias Técnicas (interno al mapa) ───────────── */
+#map { position: relative; }
+
+.tech-ref-control {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+
+.tech-ref-label {
+  background: #ffffff;
+  color: var(--header-bg);
+  font-family: var(--font-main);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 7px 0;
+  border-radius: 14px 0 0 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  transition: max-width 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+}
+
+.tech-ref-control:hover .tech-ref-label {
+  max-width: 110px;
+  opacity: 1;
+  padding: 7px 12px;
+}
+
+.tech-ref-btn {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tech-ref-btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 3px 12px rgba(0,0,0,.3);
+}
+
+.tech-ref-modal {
+  display: none;
+  position: absolute;
+  bottom: 50px;
+  right: 0;
+  width: 270px;
+  max-width: calc(100vw - 40px);
+  max-height: 250px;
+  background: #fdfdfb;
+  border: 1px solid #e2ded5;
+  border-radius: 10px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.25);
+  padding: 12px 14px;
+  z-index: 1001;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tech-ref-modal.active { display: flex; }
+
+.tech-ref-modal-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--header-bg);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #edf0e8;
+  flex-shrink: 0;
+}
+
+.tech-ref-list {
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.tech-ref-list::-webkit-scrollbar { width: 6px; }
+.tech-ref-list::-webkit-scrollbar-track { background: transparent; }
+.tech-ref-list::-webkit-scrollbar-thumb {
+  background: #d8d4c8;
+  border-radius: 4px;
+}
+.tech-ref-list::-webkit-scrollbar-thumb:hover { background: #c5c0b2; }
+
+.tech-ref-list li {
+  position: relative;
+  padding-left: 13px;
+}
+
+.tech-ref-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--header-bg);
+  font-weight: 800;
+}
+
+.tech-ref-list strong { color: #111; }
+
+.tech-ref-list a {
+  color: var(--header-bg);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tech-ref-list a:hover { text-decoration: underline; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   MODIFICACIÓN: Icono de Contactos (tooltip + popover) en #security-box
+   y ajuste del layout para que #security-text ocupe todo el ancho/alto.
+   No se eliminan ni se reescriben las reglas originales de .security-box,
+   .security-layout, .rec-list ni .cecom-card: sólo se añaden/extienden
+   propiedades puntuales para acomodar el nuevo ícono.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Contenedor padre con position:relative para anclar el ícono absoluto */
+#securityBox { position: relative; }
+
+/* El cuadro de recomendaciones ya no comparte columna con el CECOM card
+   (éste se trasladó dentro del popover de contactos), por lo que el texto
+   ahora ocupa el 100% del ancho disponible de forma fluida */
+.security-layout { grid-template-columns: 1fr; }
+.rec-list { height: 100%; padding-right: 44px; }
+
+/* Espacio para que el título del cuadro no choque con el ícono */
+.security-box h2 { padding-right: 40px; }
+
+.contacts-icon-wrap {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+}
+
+.contacts-icon-btn {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--header-bg);
+  color: #F7EFE6;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contacts-icon-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 3px 12px rgba(0,0,0,.3);
+}
+
+.contacts-icon-btn svg { display: block; }
+
+/* Tooltip "Contactos" al hacer hover */
+.contacts-tooltip {
+  position: absolute;
+  top: 50%;
+  right: 40px;
+  transform: translateY(-50%) translateX(6px);
+  background: var(--header-bg);
+  color: #F7EFE6;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.contacts-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -4px;
+  transform: translateY(-50%);
+  border-width: 4px;
+  border-style: solid;
+  border-color: transparent transparent transparent var(--header-bg);
+}
+
+.contacts-icon-wrap:hover .contacts-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Popover de contactos (Corporativo + Líneas Nacionales) */
+.contacts-popover {
+  display: none;
+  position: absolute;
+  top: 42px;
+  right: 0;
+  width: 300px;
+  max-width: calc(100vw - 40px);
+  max-height: 360px;
+  overflow-y: auto;
+  background: #F9F6F0;
+  border: 1px solid #dde0da;
+  border-radius: 12px;
+  box-shadow: 0 8px 26px rgba(0,0,0,.22);
+  padding: 14px;
+  z-index: 1002;
+}
+
+.contacts-popover.active { display: block; }
+
+.contacts-popover-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--header-bg);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #edf0e8;
+}
+
+.contacts-section-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: var(--header-bg);
+  opacity: .75;
+  margin: 12px 0 6px;
+}
+
+.contacts-section-label:first-of-type { margin-top: 0; }
+
+/* Reutiliza .cecom-card tal cual (mismas clases), sólo ajusta el margen
+   dentro del nuevo contexto del popover */
+.contacts-popover .cecom-card { margin-top: 2px; }
+
+.national-contacts-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.national-contacts-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: white;
+  border: 1px solid #ece8de;
+  border-radius: 7px;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  color: #333;
+}
+
+.national-contacts-list li span { font-weight: 600; }
+
+.national-contacts-list li strong {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--alto);
+  letter-spacing: .3px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-icon">📍</div>
+  <div>
+    <h1>Correría Fuerza de Ventas</h1>
+    <p>18 municipios · 6 departamentos · Clasificación por nivel de riesgo · Representantes asignados · Fecha de Actualización: 17 de Junio de 2026</p>
+  </div>
+  <div class="brand-logos">
+    <div class="logo-opella">
+      <span class="opella-text">Opella.</span>
+      <div class="opella-tag">
+        <span class="bold-t">Health.</span>
+        <span class="light-t">In your hands.</span>
+      </div>
+    </div>
+    <div class="logo-csi">
+      <span class="csi-text">CSI.</span>
+      <div class="csi-tag">
+        <span class="gold-t">Corporate Security.</span>
+        <span class="light-t">& intelligence.</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="alert-restriccion">
+  <div class="alert-icon">🚫</div>
+  <div class="alert-body">
+    <div class="alert-titulo">⚠️ Restricción Total de Movimientos — Jornada Electoral</div>
+    <div class="alert-mensaje">
+      Desde el día <strong>20 de junio</strong> todos los desplazamientos de campo están <strong>suspendidos en su totalidad</strong> por disposición de Seguridad Corporativa en el marco de las elecciones.
+      La <strong>reactivación de correrias</strong> se evaluará a partir del <strong>martes 23 de junio</strong> según el análisis de situación postelectoral realizado por CSI.
+      <strong>No agendar visitas, viajes ni actividades comerciales en campo hasta nuevo aviso.</strong>
+    </div>
+  </div>
+  <div class="alert-badge">
+    <div class="badge-date">20–23<br>JUN</div>
+    <div class="badge-label">Sin operación</div>
+  </div>
+</div>
+
+<div class="main-grid">
+  <div class="left-column">
+    <div id="map-container">
+      <div class="map-filter-control">
+        <label for="map-dept-select">Departamento:</label>
+        <select id="map-dept-select">
+          <option value="">-- Seleccionar --</option>
+        </select>
+      </div>
+      <!-- Leyenda flotante de referencias -->
+      <div class="map-legend-control">
+        <div class="legend-title">🗺️ Convenciones </div>
+        <div class="legend-item">
+          <div class="legend-pin" style="background:#042B0B;"></div>
+          <span>Departamento</span> — <strong style="color:#042B0B;">Color según riesgo</strong>  
+        </div>
+        <hr class="legend-sep">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#042B0B;"></div>
+          <span>Punto de Venta</span> — <strong style="color:#042B0B;">Color según riesgo</strong>
+        </div>
+      </div>
+      <div id="map">
+        <div class="tech-ref-control" id="techRefControl">
+          <span class="tech-ref-label">Referencias</span>
+          <button class="tech-ref-btn" id="techRefBtn" type="button" aria-label="Referencias técnicas">💡</button>
+          <div class="tech-ref-modal" id="techRefModal">
+            <div class="tech-ref-modal-title">ℹ️ Fuentes Técnicas Oficiales</div>
+            <ul class="tech-ref-list">
+              <li><strong>Defensoría del Pueblo (SAT):</strong> Sistema de Alertas Tempranas para el monitoreo preventivo de movilidad. (<a href="https://www.defensoria.gov.co" target="_blank" rel="noopener noreferrer">www.defensoria.gov.co</a>)</li>
+              <li><strong>Observatorio DNP:</strong> Tablero analítico del Departamento Nacional de Planeación para tasas de criminalidad. (<a href="https://www.dnp.gov.co" target="_blank" rel="noopener noreferrer">www.dnp.gov.co</a>)</li>
+              <li><strong>DITRA / Policía Nacional:</strong> Reportes de transitabilidad, novedades viales operacionales y orden público. (<a href="https://www.policia.gov.co/transito" target="_blank" rel="noopener noreferrer">www.policia.gov.co/transito</a>)</li>
+              <li><strong>INVIAS:</strong> Monitoreo periódico del Instituto Nacional de Vías para pasos de montaña e infraestructura vial primaria. (<a href="https://www.invias.gov.co" target="_blank" rel="noopener noreferrer">www.invias.gov.co</a>)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ═══ INICIO MODIFICACIÓN: Ícono de Contactos (CECOM + Líneas Nacionales) ═══ -->
+    <div class="security-box" id="securityBox">
+      <h2>🛡️ Recomendaciones Especiales — Seguridad Corporativa</h2>
+
+      <div class="contacts-icon-wrap" id="contactsIconWrap">
+        <button class="contacts-icon-btn" id="contactsBtn" type="button" aria-label="Ver contactos de emergencia">
+          <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2Z" fill="currentColor"/>
+          </svg>
+        </button>
+        <span class="contacts-tooltip">Contactos</span>
+
+        <div class="contacts-popover" id="contactsPopover">
+          <div class="contacts-popover-title">📞 Contactos de Emergencia</div>
+
+          <div class="contacts-section-label">Contacto Corporativo (Seguridad Opella)</div>
+          <div class="cecom-card">
+            <div class="cecom-info">
+              <span class="cecom-title">CECOM (24/7)</span>
+              <span class="cecom-sub">Emergency and Communications Center</span>
+              <a class="cecom-link" href="https://wa.me/573108600132" target="_blank">📞 +57 3108600132</a>
+              <a class="cecom-link" href="https://wa.me/573163702941" target="_blank">📞 +57 3163702941</a>
+              <a class="cecom-link" href="mailto:Cecom.Opella@opella.com">✉️ Cecom.Opella@opella.com</a>
+            </div>
+            <div id="qrcode" class="cecom-qr-wrapper"></div>
+          </div>
+
+          <div class="contacts-section-label">Líneas Nacionales Oficiales (Colombia)</div>
+          <ul class="national-contacts-list">
+            <li><span>Emergencias Nacionales</span><strong>123</strong></li>
+            <li><span>Policía Nacional</span><strong>112</strong></li>
+            <li><span>Policía de Carreteras</span><strong>#767</strong></li>
+            <li><span>Gaula (Antisecuestro y Extorsión)</span><strong>165</strong></li>
+            <li><span>Defensa Civil</span><strong>144</strong></li>
+            <li><span>Cruz Roja</span><strong>132</strong></li>
+            <li><span>Bomberos</span><strong>119</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="security-layout">
+        <div class="rec-list" id="security-text"></div>
+      </div>
+    </div>
+    <!-- ═══ FIN MODIFICACIÓN ═══ -->
+  </div>
+
+  <div class="risk-panel">
+    <div class="risk-tabs">
+      <button class="risk-tab alto active" onclick="switchTab('alto')">🟠 Alto</button>
+      <button class="risk-tab medio" onclick="switchTab('medio')">🟡 Medio</button>
+      <button class="risk-tab bajo" onclick="switchTab('bajo')">🟢 Bajo</button>
+    </div>
+    <div class="risk-content alto active" id="content-alto"></div>
+    <div class="risk-content medio" id="content-medio"></div>
+    <div class="risk-content bajo" id="content-bajo"></div>
+  </div>
+</div>
+
+<script>
+const MEDIDAS = {
+  alto: "🚨 Reporte constante - Desplazamientos después de las 6:00 a.m. y dar preferencia a estar resguardado en su lugar de pernocte a más tardar a las 4:00 p.m.",
+  medio: "⚠️ Reporte preventivo - Desplazamientos después de las 6:00 a.m. y dar preferencia a estar resguardado en su lugar de pernocte a más tardar a las 5:00 p.m.",
+  bajo: "✅ Reporte de Novedades - Desplazamientos diurnos de las 6:00 a.m. y dar preferencia a estar resguardado en su lugar de pernocte a más tardar a las 6:00 p.m."
+};
+
+const STORE_COORDS = {
+  "ARAUCA": [
+    { lat:7.0897, lng:-70.7590, cai:"CAI Centro Arauca, CAI Miramar" },
+    { lat:7.0920, lng:-70.7545, cai:"CAI Cristo Rey" },
+    { lat:7.0905, lng:-70.7558, cai:"CAI Cristo Rey" },
+    { lat:7.0882, lng:-70.7612, cai:"CAI Centro Arauca" },
+    { lat:7.0915, lng:-70.7570, cai:"CAI Cristo Rey" },
+    { lat:7.0910, lng:-70.7580, cai:"CAI Cristo Rey" },
+    { lat:7.0890, lng:-70.7595, cai:"CAI Centro Arauca" },
+    { lat:7.0875, lng:-70.7620, cai:"CAI Miramar" },
+    { lat:7.0870, lng:-70.7615, cai:"CAI Libertadores" },
+    { lat:7.0900, lng:-70.7565, cai:"CAI Cristo Rey" }
+  ],
+  "ARAUQUITA": [
+    { lat:6.9926, lng:-71.4300, cai:"CAI Centro Arauquita" },
+    { lat:6.9915, lng:-71.4260, cai:"CAI Centro Arauquita" }
+  ],
+  "SARAVENA": [
+    { lat:6.9530, lng:-71.8580, cai:"CAI Centro Saravena" },
+    { lat:6.9520, lng:-71.8570, cai:"CAI Alfonso López" },
+    { lat:6.9515, lng:-71.8595, cai:"CAI Centro Saravena" },
+    { lat:6.9505, lng:-71.8610, cai:"CAI Alfonso López" },
+    { lat:6.9495, lng:-71.8620, cai:"CAI Centro Saravena" },
+    { lat:6.9525, lng:-71.8560, cai:"CAI Centro Saravena" },
+    { lat:6.9510, lng:-71.8590, cai:"CAI Centro Saravena" },
+    { lat:6.9508, lng:-71.8585, cai:"CAI Centro Saravena" }
+  ],
+  "TAME": [
+    { lat:6.4615, lng:-71.7280, cai:"CAI Centro Tame" },
+    { lat:6.4608, lng:-71.7295, cai:"CAI Centro Tame" },
+    { lat:6.4600, lng:-71.7300, cai:"CAI Centro Tame" }
+  ],
+  "MIRANDA": [
+    { lat:3.2460, lng:-76.2270, cai:"CAI Centro Miranda" },
+    { lat:3.2455, lng:-76.2280, cai:"CAI Central Miranda" },
+    { lat:3.2448, lng:-76.2290, cai:"CAI Central Miranda" },
+    { lat:3.2435, lng:-76.2275, cai:"CAI El Ruiz" }
+  ],
+  "PIENDAMO": [
+    { lat:2.6508, lng:-76.5155, cai:"CAI Centro Piendamó" },
+    { lat:2.6495, lng:-76.5178, cai:"CAI Centro Piendamó" }
+  ],
+  "SANTANDER DE QUILICHAO": [
+    { lat:3.0155, lng:-76.4830, cai:"CAI Centro Quilichao" },
+    { lat:3.0160, lng:-76.4820, cai:"CAI Centro Quilichao" },
+    { lat:3.0150, lng:-76.4840, cai:"CAI Centro Quilichao" },
+    { lat:3.0140, lng:-76.4855, cai:"CAI Barrio Dora" },
+    { lat:3.0158, lng:-76.4825, cai:"CAI Centro Quilichao" },
+    { lat:3.0152, lng:-76.4835, cai:"CAI Centro Quilichao" },
+    { lat:3.0148, lng:-76.4843, cai:"CAI Centro Quilichao" },
+    { lat:3.0162, lng:-76.4818, cai:"CAI Centro Quilichao" }
+  ],
+  "TIMBIO": [
+    { lat:2.3512, lng:-76.6820, cai:"CAI Centro Timbío" },
+    { lat:2.3495, lng:-76.6840, cai:"CAI Centro Timbío" }
+  ],
+  "OCAÑA": [
+    { lat:8.2335, lng:-73.3540, cai:"CAI Centro Ocaña" },
+    { lat:8.2342, lng:-73.3530, cai:"CAI El Torito" },
+    { lat:8.2325, lng:-73.3520, cai:"CAI Dulce Nombre" },
+    { lat:8.2330, lng:-73.3550, cai:"CAI Centro Ocaña" },
+    { lat:8.2315, lng:-73.3490, cai:"CAI La Primavera" },
+    { lat:8.2328, lng:-73.3545, cai:"CAI Centro Ocaña" },
+    { lat:8.2338, lng:-73.3525, cai:"CAI San Agustín" },
+    { lat:8.2318, lng:-73.3495, cai:"CAI Avenida" },
+    { lat:8.2332, lng:-73.3538, cai:"CAI La Huaca" },
+    { lat:8.2325, lng:-73.3548, cai:"CAI Centro Ocaña" },
+    { lat:8.2320, lng:-73.3560, cai:"CAI Parque Principal" },
+    { lat:8.2331, lng:-73.3552, cai:"CAI Centro Ocaña" },
+    { lat:8.2327, lng:-73.3546, cai:"CAI Centro Ocaña" },
+    { lat:8.2340, lng:-73.3532, cai:"CAI El Torito" }
+  ],
+  "FLORIDA": [
+    { lat:3.3285, lng:-76.2360, cai:"CAI Centro Florida" },
+    { lat:3.3275, lng:-76.2380, cai:"CAI Centro Florida" }
+  ],
+  "JAMUNDI": [
+    { lat:3.2615, lng:-76.5370, cai:"CAI Parque Principal Jamundí" },
+    { lat:3.2590, lng:-76.5400, cai:"CAI Alfaguara" },
+    { lat:3.2585, lng:-76.5408, cai:"CAI Alfaguara" },
+    { lat:3.2580, lng:-76.5415, cai:"CAI Alfaguara" },
+    { lat:3.2595, lng:-76.5395, cai:"CAI Country Mall" },
+    { lat:3.2600, lng:-76.5385, cai:"CAI Country Mall Plaza" },
+    { lat:3.2588, lng:-76.5405, cai:"CAI Alfaguara" }
+  ],
+  "POPAYAN": [
+    { lat:2.4430, lng:-76.6055, cai:"CAI Norte Popayán" },
+    { lat:2.4445, lng:-76.6040, cai:"CAI Campanario" },
+    { lat:2.4448, lng:-76.6035, cai:"CAI Campanario" },
+    { lat:2.4415, lng:-76.6075, cai:"CAI Centro Popayán" },
+    { lat:2.4460, lng:-76.6020, cai:"CAI Norte" },
+    { lat:2.4420, lng:-76.6068, cai:"CAI Centro Popayán" },
+    { lat:2.4412, lng:-76.6078, cai:"CAI Centro Popayán" },
+    { lat:2.4440, lng:-76.6048, cai:"CAI Campanario" },
+    { lat:2.4435, lng:-76.6052, cai:"CAI Av Panamericana Norte" },
+    { lat:2.4418, lng:-76.6072, cai:"CAI Parque Caldas" },
+    { lat:2.4385, lng:-76.6030, cai:"CAI Bello Horizonte" },
+    { lat:2.4408, lng:-76.6082, cai:"CAI Esmeralda" },
+    { lat:2.4402, lng:-76.6088, cai:"CAI Esmeralda" },
+    { lat:2.4425, lng:-76.6060, cai:"CAI Bolívar" },
+    { lat:2.4416, lng:-76.6073, cai:"CAI Centro Popayán" },
+    { lat:2.4405, lng:-76.6085, cai:"CAI Pandiguando" },
+    { lat:2.4442, lng:-76.6043, cai:"CAI Campanario" },
+    { lat:2.4410, lng:-76.6080, cai:"CAI Centro Popayán" }
+  ],
+  "AGUACHICA": [
+    { lat:8.3095, lng:-73.6162, cai:"CAI Centro Aguachica" },
+    { lat:8.3080, lng:-73.6188, cai:"CAI Centro Aguachica" },
+    { lat:8.3072, lng:-73.6178, cai:"CAI Barahoja" }
+  ],
+  "CURUMANI": [
+    { lat:9.2008, lng:-73.5320, cai:"CAI Centro Curumaní" },
+    { lat:9.1992, lng:-73.5345, cai:"CAI Paraíso Curumaní" }
+  ],
+  "BARRANCABERMEJA": [
+    { lat:7.0665, lng:-73.8535, cai:"CAI Centro Barranca" },
+    { lat:7.0640, lng:-73.8558, cai:"CAI Pueblo Nuevo" },
+    { lat:7.0672, lng:-73.8520, cai:"CAI Centro Barranca" },
+    { lat:7.0688, lng:-73.8505, cai:"CAI La Libertad" },
+    { lat:7.0660, lng:-73.8542, cai:"CAI Parque Vida" },
+    { lat:7.0648, lng:-73.8550, cai:"CAI Centro Barranca" },
+    { lat:7.0658, lng:-73.8538, cai:"CAI Parque Infantil" },
+    { lat:7.0655, lng:-73.8548, cai:"CAI Centro Barranca" },
+    { lat:7.0670, lng:-73.8528, cai:"CAI San Silvestre" },
+    { lat:7.0657, lng:-73.8540, cai:"CAI Centro Barranca" },
+    { lat:7.0662, lng:-73.8530, cai:"CAI Barrio Colombia" },
+    { lat:7.0630, lng:-73.8572, cai:"CAI El Castillo" },
+    { lat:7.0685, lng:-73.8510, cai:"CAI La Floresta" },
+    { lat:7.0668, lng:-73.8532, cai:"CAI Torcoroma" }
+  ],
+  "DAGUA": [
+    { lat:3.6582, lng:-76.6908, cai:"CAI Centro Dagua" },
+    { lat:3.6570, lng:-76.6925, cai:"CAI Centro Dagua" },
+    { lat:3.6565, lng:-76.6932, cai:"CAI Chapinero" }
+  ],
+  "SAN GIL": [
+    { lat:6.5552, lng:-73.1350, cai:"CAI Centro San Gil" },
+    { lat:6.5545, lng:-73.1360, cai:"CAI Centro San Gil" },
+    { lat:6.5538, lng:-73.1368, cai:"CAI Botica San Gil" },
+    { lat:6.5548, lng:-73.1355, cai:"CAI Centro San Gil" }
+  ],
+  "SOCORRO": [
+    { lat:6.4652, lng:-73.2605, cai:"CAI Centro Socorro" },
+    { lat:6.4640, lng:-73.2622, cai:"CAI Socorrena" },
+    { lat:6.4635, lng:-73.2630, cai:"CAI Centro Socorro" }
+  ]
+};
+
+const CORP_RECOMMENDATIONS = {
+alto: `<p style="font-family:var(--font-display);font-size:13px;font-weight:800;color:#8b2500;margin-bottom:8px;display:flex;align-items:center;gap:6px;">🔴 Ten presente:</p>
+  <ul style="padding-left:0; list-style:none;">
+    <li style="margin-bottom:6px;">✅ Para las zonas afectadas por bloqueos de manifestaciones o paros (como las rutas de la vía Panamericana, el tramo Cali - Popayán o el paso por el peaje de Villa Rica), queda prohibido el tránsito vehicular. Se debe sustituir obligatoriamente el trayecto por transporte aéreo hasta los aeropuertos principales más cercanos.</li>
+    <li style="margin-bottom:6px;">✅ En zona del departamento de Arauca, las visitas comerciales se limitarán exclusivamente al casco urbano principal. No internarse en corregimientos, veredas o tramos de carreteras secundarias.</li>
+    <li style="margin-bottom:6px;">✅ Antes de abrir un establecimiento o iniciar una visita en los municipios permitidos, el asesor debe confirmar el ambiente comercial con los clientes clave locales para descartar cierres preventivos o riesgo directo en el sector.</li>
+    <li style="margin-bottom:6px;">✅ El personal que opere en zonas de riesgo alto por favor reportar su posición o estado a el área seguridad corporativa vía GPS o mensajería instantánea (CECOM).</li>
+  </ul>`,
+  
+  medio: `<p style="font-family:var(--font-display);font-size:13px;font-weight:800;color:#7a5200;margin-bottom:8px;display:flex;align-items:center;gap:6px;">🟡 Ten presente:</p>
+  <ul style="padding-left:0; list-style:none;">
+    <li style="margin-bottom:6px;">✅ Para zonas con alertas de infraestructura (como la vía al Pacífico en el tramo hacia Dagua), es obligatorio consultar el estado físico de los taludes y reportes de Invías antes de iniciar el despacho por tierra, debido al riesgo latente de pérdida de banca o caída de rocas.</li>
+    <li style="margin-bottom:6px;">✅ En municipios con fronteras geográficas complejas, la fuerza de ventas debe utilizar únicamente la red vial nacional principal y abstenerse de tomar desvíos o atajos hacia la subregiones o vías que comunican con zonas de invasión de predios.</li>
+    <li style="margin-bottom:6px;">✅ En las zonas comerciales de Aguachica y Curumaní, se deben asegurar las mercancías, evitar la exposición de dispositivos corporativos o dinero en efectivo en la vía pública, y estar atentos a los planes de control y registro de la Policía Nacional.</li>
+    <li style="margin-bottom:6px;">✅ El personal que opere en estas zonas por favor reportar su posición, estado o novedad a el área seguridad corporativa por medio de mensajería instantánea (CECOM).</li>
+  </ul>`,
+  
+  bajo: `<p style="font-family:var(--font-display);font-size:13px;font-weight:800;color:#3a4a2f;margin-bottom:8px;display:flex;align-items:center;gap:6px;">🟢 Ten presente:</p>
+  <ul style="padding-left:0; list-style:none;">
+    <li style="margin-bottom:6px;">✅ Aunque el índice de criminalidad organizada sea bajo, se deben aplicar las normas corporativas básicas de seguridad: parquear en lugares autorizados (si aplica), restringir uso de objetos de valor o cargar muy visiblemente objetos de marcas o da la empresa en calles públicas.</li>
+    <li style="margin-bottom:6px;">✅ Reportar preferiblemente durante y al final de la jornada laboral el cumplimiento de la ruta y registrar cualquier novedad logística menor (como congestiones de tráfico locales o desvíos por mantenimiento urbano) o novedades de seguridad al área seguridad (CECOM).</li>
+  </ul>`
+};
+
+const CITY_RISK = {
+  "ARAUCA":"alto","ARAUQUITA":"alto","SARAVENA":"alto","TAME":"alto",
+  "MIRANDA":"alto","PIENDAMO":"alto","SANTANDER DE QUILICHAO":"alto","TIMBIO":"alto",
+  "OCAÑA":"alto","FLORIDA":"alto","JAMUNDI":"alto",
+  "POPAYAN":"alto","AGUACHICA":"medio","CURUMANI":"medio","BARRANCABERMEJA":"medio","DAGUA":"medio",
+  "SAN GIL":"bajo","SOCORRO":"bajo"
+};
+
+const CITY_COORDS = {
+  "ARAUCA":[7.0897,-70.7617],"ARAUQUITA":[6.9926,-71.4278],"SARAVENA":[6.9519,-71.8598],"TAME":[6.4605,-71.7293],
+  "MIRANDA":[3.2454,-76.2283],"PIENDAMO":[2.6500,-76.5167],"SANTANDER DE QUILICHAO":[3.0148,-76.4843],"TIMBIO":[2.3500,-76.6833],
+  "OCAÑA":[8.2328,-73.3548],"FLORIDA":[3.3279,-76.2372],"JAMUNDI":[3.2607,-76.5383],
+  "POPAYAN":[2.4419,-76.6069],"AGUACHICA":[8.3086,-73.6175],"CURUMANI":[9.2000,-73.5333],
+  "BARRANCABERMEJA":[7.0653,-73.8547],"DAGUA":[3.6574,-76.6919],
+  "SAN GIL":[6.5545,-73.1362],"SOCORRO":[6.4644,-73.2617]
+};
+
+const CITY_DEPT = {
+  "ARAUCA":"Arauca","ARAUQUITA":"Arauca","SARAVENA":"Arauca","TAME":"Arauca",
+  "MIRANDA":"Cauca","PIENDAMO":"Cauca","SANTANDER DE QUILICHAO":"Cauca","TIMBIO":"Cauca",
+  "OCAÑA":"Norte de Santander","FLORIDA":"Valle del Cauca","JAMUNDI":"Valle del Cauca",
+  "POPAYAN":"Cauca","AGUACHICA":"Cesar","CURUMANI":"Cesar","BARRANCABERMEJA":"Santander","DAGUA":"Valle del Cauca",
+  "SAN GIL":"Santander","SOCORRO":"Santander"
+};
+
+const CITY_REP = {
+  "ARAUCA":"CASTILLO MONICA ROCIO","ARAUQUITA":"CASTILLO MONICA ROCIO","SARAVENA":"CASTILLO MONICA ROCIO","TAME":"CASTILLO MONICA ROCIO",
+  "MIRANDA":"VILLALOBOS ALZATE YENNIFER","PIENDAMO":"AGUDELO CARDONA GINNA S.","SANTANDER DE QUILICHAO":"ARISTIZABAL LISETH DAYANA","TIMBIO":"AGUDELO CARDONA GINNA S.",
+  "OCAÑA":"SANCHEZ CAMARGO JENNIFER","FLORIDA":"VILLALOBOS ALZATE YENNIFER","JAMUNDI":"ARISTIZABAL LISETH DAYANA",
+  "POPAYAN":"AGUDELO CARDONA GINNA S.","AGUACHICA":"BLANCO SAAVEDRA KATHERINE","CURUMANI":"BLANCO SAAVEDRA KATHERINE",
+  "BARRANCABERMEJA":"BLANCO SAAVEDRA KATHERINE","DAGUA":"AGUDELO CARDONA GINNA S.",
+  "SAN GIL":"BLANCO SAAVEDRA KATHERINE","SOCORRO":"BLANCO SAAVEDRA KATHERINE"
+};
+
+const STORES = {
+  "ARAUCA":[{name:"FARMANUEVA",addr:"Cl 15 #30-05"},{name:"MEGADROGAS PLUS",addr:"CL 18 15 04 CRISTO REY"},{name:"DROG. MERCALLANO",addr:"CR 18 18 67"},{name:"DROGUERIA PAZ",addr:"CR.15 16-02 (B.AMERICAS)"},{name:"DROG. MEGADROGAS ARAUCA",addr:"CR.16 19-38 (B.CRISTO REY)"},{name:"DROG. METRODROGAS PLUS",addr:"CR.16 14-25 (B.CRISTO REY)"},{name:"DROG. SANTA FE ARC",addr:"CR.20 21-33 CENTRO"},{name:"DROG. FARMACIA SUPER DROGAS",addr:"CR.20 26-87 (B.MIRAMAR)"},{name:"METRODROGAS 2027",addr:"CRA 20 27 03 LIBERTADORES"},{name:"DROG. FARMARAUCA",addr:"KR 16 23 - 86"}],
+  "ARAUQUITA":[{name:"FARMAMEDICA PLUS",addr:"CL 5 5-80"},{name:"FARMAEXITO 1",addr:"CL.2 4-17 CENTRO"}],
+  "SARAVENA":[{name:"FARMA YANIRA DEL SARARE",addr:"CALLE 29 #16 esquina"},{name:"DROG. LOS PAISASOS",addr:"CALLE 30 19 A 75"},{name:"DROG. LOPEZ Y SERRANO",addr:"CL 28 14-02"},{name:"DROG. ALKOSTO-SARAVENA",addr:"CR 13 25 11 BR ALFONSO LOPEZ"},{name:"D CHAPARROS N 2",addr:"CR 29 27-47"},{name:"SERVIDROGAS SARAVENA",addr:"CRA 13 20-55"},{name:"DROG. SANTANDER SARAVENA",addr:"DG.30 14-45 CENTRO"},{name:"DROG. PAISASOS # 2",addr:"DG.30 14-80-88"}],
+  "TAME":[{name:"EL PAISA DE TAME",addr:"CL 14 10-77"},{name:"DROGAS LA MEJOR",addr:"CL 15 12-25"},{name:"DROG. SANTA ANA (TAME)",addr:"CL.14 13-89 ESQ"}],
+  "MIRANDA":[{name:"DROGUERIA PHARMA MIRANDA",addr:"CALLE 6 6 - 11"},{name:"DROG. SAN ANTONIO MIRANDA",addr:"CL.7 6-20 (B.CENTRAL)"},{name:"DROG. AMIGA YOLANDA",addr:"CR.5 6-10 (B.CENTRAL)"},{name:"DROG. AMIGA YOLANDA DOS",addr:"CR.7 10-01 (B.EL RUIZ)"}],
+  "PIENDAMO":[{name:"D DROGAS DEL COMERCIO",addr:"CR 4 10 59"},{name:"DROG. BARATAS PIENDAMO",addr:"CL 8 5-67"}],
+  "SANTANDER DE QUILICHAO":[{name:"DROGAS LOS SAMANES MM",addr:"CALLE 3 11-66"},{name:"DROGAS LOS SAMANES MM EL PARQUE",addr:"CARRERA 10 3-67 CENTRO"},{name:"DROGUERIA Y ORTOPEDICOS KAMI",addr:"CL.3 8-46 (B.CENTRO)"},{name:"DROGAS EL DORADO UNO",addr:"CR 16A 7A 03 BR/DORA"},{name:"DROGAS LOS SAMANES MM1",addr:"CR.12 3-23 (B.CENTRO)"},{name:"DROG. UNIVERSAL",addr:"CR.12 5-03 CENTRO"},{name:"DROGUERIA SAN ANTONIO DE QUILICHAO",addr:"CR.9 2-89 (B.CENTRO)"},{name:"DROGAS LOS SAMANES MM 2",addr:"CRA 12A 4-34"}],
+  "TIMBIO":[{name:"DROG. 24 HORAS",addr:"CL 18 20-46"},{name:"DROG. TIMBIO",addr:"CR.20 17-31 CENTRO"}],
+  "OCAÑA":[{name:"OCAN-D ANGIE",addr:"CL 10 13 45"},{name:"DROGUERIA LA DOCE",addr:"CALLE 12 8-38 EL TORITO"},{name:"DROGUERIA Y AUTOSERVICIO 20-20",addr:"Carr 13 #18-47 dulce nombre"},{name:"DROGUERIA LA 10 DE OCANA",addr:"CL.10 14-81 (B.CENTRO)"},{name:"DROGUERIA X CALL Y AUTOSERVICIO",addr:"CL.7 29-156 (B.LA PRIMAVERA)"},{name:"D CENTRAL-OCAÑA",addr:"CR 12 9 64"},{name:"DROGUERIA PINEDA",addr:"CR 15 A #11-02 SAN AGUSTIN"},{name:"D AVENIDA O",addr:"CL 7 28 55"},{name:"D LO ESTORQUES OCA-A",addr:"CL 11 13 81 LC 105 LA HUACA"},{name:"D CLAVIJO",addr:"CR 13 9 34"},{name:"D FARMANORTE N 350 P3112",addr:"PQ PRINCIPAL OCANA"},{name:"D LA 10",addr:"CL 10 14 81"},{name:"D CENTRAL",addr:"CR 12 9 64"},{name:"OCAN-D LA DOCE",addr:"CR 12 8 38"}],
+  "FLORIDA":[{name:"DROG. PHARMAFLORIDA",addr:"CL 9 14 90"},{name:"DROG. FAMILIA",addr:"CL 9A 20 15"}],
+  "JAMUNDI":[{name:"D LA REBAJA PLUS N 1 JAMUNDI PQ PPAL",addr:"CR 10 10 70"},{name:"D CRUZ VERDE 871 ALFAGUARA",addr:"CL 2 22 175 LC 1-58 CC ALFAGUARA"},{name:"COMFANDI D 740 ALFAGUARA",addr:"CL 2 22 175 LC 61 62"},{name:"D LA REBAJA PLUS N 2 JAMUNDI ALFAGUARA",addr:"LT A SC 3 GLORIETA ALFAGUARA"},{name:"D FARMATODO CC COUNTRY MALL",addr:"CC COUNTRY MALL"},{name:"FARMACIA Y DROGUERIA SAN JORGE 34",addr:"CC CONTRY MALL PLAZA AV PANAMERICANA"},{name:"FARMACIA DROGUERIA SAN JORGE # 17",addr:"CL. 2 22-175 LC.1-66 C.C. ALFAGUARA"}],
+  "POPAYAN":[{name:"D CRUZ VERDE 117 POPAYAN",addr:"CR 9 17A NTE 87 LC 3"},{name:"D CRUZ VERDE 215 CAMPANARIO",addr:"CR 9 24A NTE 21"},{name:"D CRUZ VERDE 453 JUMBO CAMPANARIO",addr:"CR 9 24A NORTE 21 LC 128"},{name:"D CRUZ VERDE CENTRO",addr:"CL 5 7 50"},{name:"D CRUZ VERDE VALLE DE VIENTO",addr:"CR 9 54N 61"},{name:"D DAO SAS",addr:"CR 6 7 77"},{name:"D DROFAR PLUS",addr:"CL 4 11 23"},{name:"D LA REBAJA PLUS N 1 POP CTRO CCIAL CAMP",addr:"CR 9 23N 73"},{name:"D LA REBAJA PLUS N 3 POPAYAN AV PAN NTE",addr:"CR 9 20N 04"},{name:"D PARQUE CALDAS",addr:"CL 5 5 97"},{name:"D REBARATAS LA 67",addr:"CL 67 11 33 B BELLO HORIZONTE"},{name:"DROG. NACIONAL DE DROGAS LA ESMERALDA #3",addr:"CALLE 5 16-21"},{name:"DROG. NACIONAL DE DROGAS CAUCA ESMERALDA",addr:"CR.17 6-30 (B.ESMERALDA)"},{name:"DROG. BOLIVAR PLUS",addr:"CR.6 7N-51 (B.BOLIVAR)"},{name:"DROG. NACIONAL DE DROGAS CAUCA",addr:"CL.7 4-76 CENTRO"},{name:"DROG. SUPERDROGAS LA CUARTA POPAYAN",addr:"CR.17 3-20 (B.PANDIGUANDO)"},{name:"OLIMPICA D 580 POPAYAN",addr:"CR 9 24N 80"},{name:"OLIMPICA D 581 CENTRO",addr:"CL 2N 7 74"}],
+  "AGUACHICA":[{name:"D PAGUE MENOS LA QUINTA",addr:"CL 5 17 90 BR CENTRO"},{name:"DROG. MAS X MENOS 32",addr:"CL 5 29 52"},{name:"DROGUERIA MAXIDROGAS",addr:"CRA 8 5-45 BARRIO BARAHOJA"}],
+  "CURUMANI":[{name:"DROG. FARMACUR # 2",addr:"CALLE 8 16-29 LC.2 (B.CENTRO)"},{name:"DROG. FARMACUR",addr:"CALLE 9A 15-125 (B.PARAISO)"}],
+  "BARRANCABERMEJA":[{name:"D ALEMANA N 006 P8855",addr:"CL 48 22 01"},{name:"D FARMANORTE N 193 P3112",addr:"CR 17 57 61 BR PUEBLO NUEVE"},{name:"D ALEMANA N 017 P8855",addr:"CL 52 27 02"},{name:"D ALEMANA N 173 P8855",addr:"CL 71 18 101 BR LA LIBERTAD"},{name:"D ALEMANA N 111 P8855",addr:"CL 50 25 35/37/39 PQ VIDA"},{name:"D ALEMANA N 444 P4917",addr:"CR 25 49 05"},{name:"D LA REBAJA PLUS N 1 PARQUE INFANTIL",addr:"CL 49 16 25"},{name:"D ALEMANA N 110 P8855",addr:"DG 48 27 121"},{name:"D ALEMANA N 118 P8855",addr:"DG 56 18A 88 CCIAL SAN SILVESTRE"},{name:"D ALEMANA N 062 P8855",addr:"CL 49 16 17"},{name:"D LA REBAJA PLUS N 2 BARRIO COLOMBIA",addr:"CL 50 27 99 ESQ B.CO"},{name:"DROG. SURY SADAY",addr:"CALLE 30 42-26 B. EL CASTILLO"},{name:"REINA BARRANCA",addr:"CALLE 71 31-50 B.LA FLORESTA"},{name:"DROG. LATINFARMA",addr:"CL.55 21-01 (B.TORCOROMA)"}],
+  "DAGUA":[{name:"D CENTRAL J Y M",addr:"CL 10 7-09 VIA LAGUN"},{name:"FARMA 30",addr:"CALLE 10 A 10 B S"},{name:"SALUD MINIMARKET",addr:"CL 10 12 10 BR CHAPINERO"}],
+  "SAN GIL":[{name:"D METROPOLITANA REAL",addr:"CL 11 8 96"},{name:"D CRUZ VERDE 1197 CR 9 P4942",addr:"CR 9 11 75"},{name:"D CRUZ VERDE 1196 BOTICA P4942",addr:"CR 10 12 81 LC 101"},{name:"D LA PRINCIPAL DEL FONCE",addr:"CR 9 12 28"}],
+  "SOCORRO":[{name:"D PLUS MEDICA",addr:"CL 14 12 60"},{name:"D CRUZ VERDE 1199 SOCORRENA P4942",addr:"CR 15 12 03"},{name:"D ALEMANA N 039 P8855",addr:"CL 10 16 40"}]
+};
+
+const COLORS = { bajo:"#7D8C6B", medio:"#E8B84B", alto:"#E05A1A" };
+
+const DEPT_INFO = {
+  "Amazonas":              { capital:"Leticia",              lat:-1.1670, lng:-70.1550 },
+  "Antioquia":             { capital:"Medellín",             lat: 6.9953, lng:-75.3304 },
+  "Arauca":                { capital:"Arauca",               lat: 6.9926, lng:-71.5200 },
+  "Atlántico":             { capital:"Barranquilla",         lat:10.6966, lng:-74.8741 },
+  "Bolívar":               { capital:"Cartagena",            lat: 8.9000, lng:-74.1000 },
+  "Boyacá":                { capital:"Tunja",                lat: 5.8300, lng:-72.7800 },
+  "Caldas":                { capital:"Manizales",            lat: 5.2667, lng:-75.4333 },
+  "Caquetá":               { capital:"Florencia",            lat: 1.1370, lng:-74.8060 },
+  "Casanare":              { capital:"Yopal",                lat: 5.6333, lng:-71.5333 },
+  "Cauca":                 { capital:"Popayán",              lat: 2.2000, lng:-76.9167 },
+  "Cesar":                 { capital:"Valledupar",           lat: 9.5000, lng:-73.3500 },
+  "Chocó":                 { capital:"Quibdó",               lat: 5.9167, lng:-76.8333 },
+  "Córdoba":               { capital:"Montería",             lat: 8.4000, lng:-75.8667 },
+  "Cundinamarca":          { capital:"Bogotá",               lat: 4.8000, lng:-74.1500 },
+  "Guainía":               { capital:"Inírida",              lat: 3.0000, lng:-68.5000 },
+  "Guaviare":              { capital:"San José del Guaviare",lat: 2.5000, lng:-72.6667 },
+  "Huila":                 { capital:"Neiva",                lat: 2.5000, lng:-75.5833 },
+  "La Guajira":            { capital:"Riohacha",             lat:11.5000, lng:-72.3333 },
+  "Magdalena":             { capital:"Santa Marta",          lat:10.0000, lng:-74.1667 },
+  "Meta":                  { capital:"Villavicencio",        lat: 3.7500, lng:-73.0833 },
+  "Nariño":                { capital:"Pasto",                lat: 1.5000, lng:-77.5000 },
+  "Norte de Santander":    { capital:"Cúcuta",               lat: 8.2500, lng:-72.8333 },
+  "Putumayo":              { capital:"Mocoa",                lat: 0.8000, lng:-76.1667 },
+  "Quindío":               { capital:"Armenia",              lat: 4.5333, lng:-75.7000 },
+  "Risaralda":             { capital:"Pereira",              lat: 5.1667, lng:-75.9333 },
+  "San Andrés y Providencia":{ capital:"San Andrés",         lat:12.5333, lng:-81.7167 },
+  "Santander":             { capital:"Bucaramanga",          lat: 6.5833, lng:-73.1333 },
+  "Sucre":                 { capital:"Sincelejo",            lat: 9.0000, lng:-75.2500 },
+  "Tolima":                { capital:"Ibagué",               lat: 4.0000, lng:-75.2500 },
+  "Valle del Cauca":       { capital:"Cali",                 lat: 3.8000, lng:-76.5333 },
+  "Vaupés":                { capital:"Mitú",                 lat: 1.0000, lng:-70.5000 },
+  "Vichada":               { capital:"Puerto Carreño",       lat: 4.5000, lng:-70.0000 },
+  "Bogotá D.C.":           { capital:"Bogotá D.C.",          lat: 4.7110, lng:-74.0721 }
+};
+
+const DEPT_BOUNDS = {
+  "Arauca":               [[6.0, -72.5], [7.6, -70.3]],
+  "Cauca":                [[1.0, -77.5], [3.5, -75.8]],
+  "Norte de Santander":   [[7.2, -74.0], [9.2, -72.0]],
+  "Valle del Cauca":      [[3.0, -77.0], [5.0, -75.7]],
+  "Cesar":                [[8.5, -74.5],[10.5, -72.7]],
+  "Santander":            [[5.7, -74.3], [8.1, -72.5]]
+};
+
+// ── RIESGO POR DEPARTAMENTO (Fuente: Informe_Riesgo_Seguridad_Colombia_2026) ──
+const DEPT_RISK = {
+  "Amazonas":                  "bajo",
+  "Antioquia":                 "alto",
+  "Arauca":                    "alto",
+  "Atlántico":                 "medio",
+  "Bogotá D.C.":               "medio",
+  "Bolívar":                   "medio",
+  "Boyacá":                    "bajo",
+  "Caldas":                    "bajo",
+  "Caquetá":                   "alto",
+  "Casanare":                  "medio",
+  "Cauca":                     "alto",
+  "Cesar":                     "medio",
+  "Chocó":                     "alto",
+  "Córdoba":                   "medio",
+  "Cundinamarca":              "medio",
+  "Guainía":                   "bajo",
+  "Guaviare":                  "alto",
+  "Huila":                     "alto",
+  "La Guajira":                "medio",
+  "Magdalena":                 "medio",
+  "Meta":                      "medio",
+  "Nariño":                    "alto",
+  "Norte de Santander":        "alto",
+  "Putumayo":                  "alto",
+  "Quindío":                   "bajo",
+  "Risaralda":                 "bajo",
+  "San Andrés y Providencia":  "bajo",
+  "Santander":                 "bajo",
+  "Sucre":                     "medio",
+  "Tolima":                    "medio",
+  "Valle del Cauca":           "alto",
+  "Vaupés":                    "bajo",
+  "Vichada":                   "bajo"
+};
+
+// ── DESCRIPCIONES ANALÍTICAS POR DEPARTAMENTO (Fuente: PDF Institucional 2026) ──
+const DEPT_DESC = {
+  "Amazonas":             { desc: "La región presenta condiciones estables de seguridad física en el casco urbano de Leticia. No se reportan acciones delictivas directas contra la cadena de suministro médico ni bloqueos viales masivos. El riesgo es predominantemente logístico por aislamiento geográfico. Las operaciones comerciales se realizan sin contratiempos de orden público.", fuente: "Defensoría del Pueblo SAT y Observatorio DNP" },
+  "Antioquia":            { desc: "Compleja situación de orden público en subregiones como el Bajo Cauca, Nordeste y Urabá antioqueño por control territorial y extorsión de Grupos Armados Organizados (GAO). El corredor vial Medellín–Santa Fe presenta novedades operativas constantes por deslizamientos de tierra y paso restringido a un carril, incrementando la vulnerabilidad de los vehículos comerciales en tránsito.", fuente: "Defensoría del Pueblo SAT y DITRA/Policía Nacional" },
+  "Arauca":               { desc: "Persiste un escenario de confrontación armada activa e instalación de retenes ilegales intermitentes en los corredores Tame–Arauca y Fortul–Saravena. Existe riesgo crítico de extorsión a empresas de distribución logística y restricciones severas impuestas por actores al margen de la ley sobre la movilidad nocturna y diurna.", fuente: "Defensoría del Pueblo SAT y Observatorio DNP" },
+  "Atlántico":            { desc: "La movilidad en vías principales (Vía al Mar y Cordialidad) se encuentra habilitada sin bloqueos armados. El riesgo se concentra en Barranquilla y Soledad por altos índices de delincuencia organizada urbana especializada en extorsión comercial y hurto calificado a vehículos de reparto, exigiendo protocolos de entrega estrictos en farmacias periféricas.", fuente: "Observatorio DNP e Informes Sectoriales de Seguridad Gremial" },
+  "Bogotá D.C.":          { desc: "El Distrito Capital presenta dinámicas complejas de seguridad urbana. El principal factor de afectación para la fuerza de ventas es el hurto a personas, atraco a mano armada en visitas a consultorios y droguerías en localidades críticas (Kennedy, Bosa, Suba, Engativá), además de bloqueos intermitentes por manifestaciones en vías principales (Av. Caracas, NQS).", fuente: "Observatorio DNP y Defensoría del Pueblo SAT" },
+  "Bolívar":              { desc: "Zonas estables en el norte (Cartagena y áreas metropolitanas), pero con presencia focalizada de riesgo alto en el Sur de Bolívar por minería ilegal y tensiones armadas. Se registran bloqueos esporádicos en vías troncales por protestas sociales comunitarias asociadas a servicios públicos.", fuente: "Defensoría del Pueblo SAT y DITRA/Plantillas de Manifestaciones" },
+  "Boyacá":               { desc: "Catalogado como uno de los departamentos con mejores indicadores de seguridad del país. El tránsito es libre en sus ejes viales hacia Tunja, Duitama y Sogamoso. Se debe mantener precaución en la vía Guateque–El Secreto (Km 77, Peaje San Luis de Gaceno) y la vía Ubaté–Puente Nacional (Km 66, Peaje Saboyá) por congestión o novedades de control.", fuente: "Observatorio DNP y DITRA/Novedades de Infraestructura y Peajes" },
+  "Caldas":               { desc: "Seguridad consolidada en el eje Manizales–Chinchiná. El tránsito de la fuerza de ventas terrestre cuenta con amplias garantías institucionales. Riesgos residuales limitados a fenómenos climáticos estacionales en pasos de montaña (Páramo de Letras) que provocan cierres preventivos parciales, sin amenazas de orden público activas.", fuente: "Observatorio DNP y Reportes Operacionales INVIAS" },
+  "Caquetá":              { desc: "Zona de alta complejidad en orden público por la fuerte injerencia de estructuras disidentes que imponen manuales de convivencia forzados y carnetización a pobladores. Se registran constantes paros, bloqueos de movilidad e imposición de cuotas extorsivas a los canales comerciales y distribuidores de insumos esenciales.", fuente: "Defensoría del Pueblo SAT y DITRA/Plantillas de Manifestaciones" },
+  "Casanare":             { desc: "La conectividad urbana en Yopal y Aguazul es aceptable, pero se mantiene la alerta en rutas marginales de la selva por delincuencia común dedicada a la extorsión de la industria pesada y comercial. Se presentan cierres programados o restricciones de carga en puentes principales por fallas estructurales causadas por el arrastre de corrientes de ríos.", fuente: "Observatorio DNP y DITRA/Cierres Totales y Parciales" },
+  "Cauca":                { desc: "Entorno de máxima peligrosidad por hostigamientos, emboscadas y bloqueos en la Vía Panamericana. Este corredor genera alerta en 2026 por la presencia armada y el ataque al esquema de Feliciano Valencia el 17 de junio en Puerto Tejada, reactivando el debate sobre su militarización y el refuerzo de controles viales. Persisten también cierres totales en rutas secundarias como Samanga - La Esperanza - El Canelo.", fuente: "Defensoría del Pueblo SAT y DITRA/Estado de Vías Nacionales" },
+  "Cesar":                { desc: "Tránsito fluido en la Ruta del Sol hacia Valledupar. El riesgo operacional radica en las zonas limítrofes con la Serranía del Perijá por extorsiones agrícolas y ganaderas. En áreas urbanas de Valledupar y Aguachica, se recomienda mitigar la exposición de la fuerza de ventas frente al hurto callejero de maletines y dispositivos tecnológicos.", fuente: "Observatorio DNP y Defensoría del Pueblo SAT" },
+  "Chocó":                { desc: "Escenario recurrente de paros armados decretados por el ELN y el Clan del Golfo que paralizan la movilidad de los ríos San Juan y Atrato, afectando severamente los ejes terrestres Quibdó–Medellín y Quibdó–Pereira. Existe restricción total corporativa para el movimiento terrestre de personal civil o comercial no esencial por riesgo inminente de secuestro extorsivo o fuego cruzado.", fuente: "Defensoría del Pueblo SAT" },
+  "Córdoba":              { desc: "Condiciones viales y de orden público estables en Montería y el corredor hacia la costa. Se mantiene catalogación de riesgo medio debido al cobro de cuotas extorsivas a establecimientos de comercio minorista (droguerías) por subestructuras del Clan del Golfo en el sur del departamento (Tierralta, Montelíbano), requiriendo discreción operativa.", fuente: "Defensoría del Pueblo SAT y Observatorio DNP" },
+  "Cundinamarca":         { desc: "Aunque los índices de seguridad física frente a actores armados son estables, el riesgo se eleva a medio por afectaciones críticas en infraestructura vial estratégica. El corredor Transversal Medellín–Bogotá (sector Villeta–Bogotá) se encuentra bajo Cierre Total por fallas estructurales severas. La vía Transversal Las Ánimas–Bogotá presenta cierres totales programados por obras de izaje de vigas.", fuente: "DITRA/Resolución 04676 e Informes de Obra y Observatorio DNP" },
+  "Guainía":              { desc: "Entorno urbano en Inírida libre de delincuencia armada de alto impacto contra civiles. Las restricciones operacionales se derivan de la carencia de interconexión vial terrestre nacional. Los movimientos comerciales se efectúan por vía fluvial o aérea y están sujetos exclusivamente a condiciones climáticas y de navegabilidad.", fuente: "Defensoría del Pueblo SAT y Observatorio DNP" },
+  "Guaviare":             { desc: "Riesgo operacional elevado por el accionar latente de disidencias armadas en rutas intermunicipales hacia San José del Guaviare, Retorno y Calamar. Se presentan dinámicas de extorsión coercitiva activa, exigencia de permisos previos de circulación para vehículos comerciales y restricciones severas de horarios que comprometen la integridad de la fuerza de ventas.", fuente: "Defensoría del Pueblo SAT" },
+  "Huila":                { desc: "El departamento experimenta un incremento notable en incursiones y extorsiones de grupos insurgentes contra el comercio local en Neiva y Pitalito. Se registran afectaciones viales críticas: la vía Orrapihuasi–Depresión El Vergel (Ruta Nacional 2003A) presenta Cierre Total obligatorio por pérdida de la calzada y fallas geológicas, paralizando el flujo logístico secundario.", fuente: "DITRA/Reporte de Novedades de Infraestructura y Defensoría del Pueblo SAT" },
+  "La Guajira":           { desc: "El eje norte y la Troncal del Caribe presentan operatividad regular. El riesgo se clasifica en medio por bloqueos civiles comunitarios recurrentes organizados por comunidades indígenas Wayúu en demanda de agua o infraestructura, deteniendo el flujo comercial durante horas. Se aconseja mitigar la exposición ante el contrabando y la delincuencia común en zonas de frontera.", fuente: "DITRA/Monitoreo de Corredores del Norte y Observatorio DNP" },
+  "Magdalena":            { desc: "La capital Santa Marta cuenta con condiciones estables de seguridad física urbana. Sin embargo, la Troncal del Caribe registra un cierre parcial crítico por el colapso estructural del puente Mendihuaca (creciente súbita del río), operando únicamente mediante un puente provisional del Ejército Nacional que genera alta congestión y demoras.", fuente: "DITRA/Reporte de Estado de Puentes Nacionales y Defensoría del Pueblo SAT" },
+  "Meta":                 { desc: "La Vía al Llano (Bogotá–Villavicencio) opera de manera regular, aunque bajo monitoreo preventivo por recurrencia histórica de caída de material rocoso ante lluvias. Los cascos urbanos de Villavicencio, Acacías y Granada muestran condiciones viables de tránsito diurno, debiendo mitigar riesgos asociados a extorsiones selectivas en zonas rurales aledañas.", fuente: "Observatorio DNP y DITRA/Consolidado Vial" },
+  "Nariño":               { desc: "Escenario de orden público sumamente hostil en los corredores viales de la cordillera y la costa pacífica (Tumaco). En la frontera sur (Puente Internacional de Rumichaca), se registran bloqueos vehiculares significativos por gremios de transportadores e incidentes transfronterizos que detienen completamente los movimientos logísticos y de la fuerza de ventas.", fuente: "Defensoría del Pueblo SAT y DITRA/Reportes de Manifestaciones y Bloqueos" },
+  "Norte de Santander":   { desc: "Máximo nivel de alerta operacional. La subregión del Catatumbo se mantiene intransitable para personal comercial civil por control hegemónico de grupos armados, activación de artefactos explosivos y secuestros. En Cúcuta y el área metropolitana, el riesgo delictivo es muy alto, sumado a cierres totales o restricciones binacionales intermitentes en puentes internacionales sobre el río Táchira.", fuente: "Defensoría del Pueblo SAT y DITRA/Estado de Vías de Frontera" },
+  "Putumayo":             { desc: "Entorno de alta criticidad en los corredores Mocoa–Puerto Asís y hacia las fronteras. Grupos armados ilegales ejercen presiones extremas sobre las redes comerciales locales, exigiendo extorsiones directas. El Puente Internacional San Miguel registra bloqueos vehiculares periódicos e intermitentes originados por protestas sociales e inconformidad de gremios de transporte.", fuente: "Defensoría del Pueblo SAT y DITRA/Plantillas de Manifestaciones Sociales" },
+  "Quindío":              { desc: "Condiciones óptimas de seguridad física en Armenia, Calarcá y municipios turísticos del departamento. Los equipos de ventas pueden desplazarse por las troncales principales sin amenazas de orden público. Se recomienda verificar regularmente el estado de tránsito del Túnel de La Línea por congestiones vehiculares menores asociadas a incidentes mecánicos de vehículos de carga pesada.", fuente: "Observatorio DNP y DITRA/Reportes de Corredores Estratégicos" },
+  "Risaralda":            { desc: "Eje metropolitano Pereira–Dosquebradas consolidado con plenas garantías operacionales para visitas comerciales presenciales a droguerías y clínicas. No existen factores de delincuencia armada organizada afectando las vías principales de conectividad del departamento, permitiendo un flujo normal bajo pautas corporativas comunes.", fuente: "Observatorio DNP y Reportes Operacionales de Seguridad en el Transporte" },
+  "San Andrés y Providencia": { desc: "El archipiélago insular no presenta presencia de Grupos Armados Organizados ni bloqueos viales de carreteras nacionales. El entorno de visitas comerciales es seguro. Los riesgos operacionales se centran exclusivamente en delincuencia común urbana menor (hurtos de oportunidad) en zonas turísticas y en limitaciones logísticas intrínsecas del transporte marítimo y aéreo.", fuente: "Observatorio DNP y Defensoría del Pueblo SAT" },
+  "Santander":            { desc: "Ejes principales hacia Bucaramanga, Floridablanca, San Gil y el Socorro presentan un nivel sobresaliente de estabilidad institucional y seguridad. El movimiento terrestre de las fuerzas comerciales se ejecuta con normalidad. Únicamente se registran novedades viales de tráfico menores o pasos controlados preventivos por obras de mitigación en el Km 63 del corredor de San Gil.", fuente: "Observatorio DNP y DITRA/Estado de Vías de Conectividad Nacional" },
+  "Sucre":                { desc: "Movilidad y conectividad estables en Sincelejo y las Sabanas de Sucre. La clasificación en riesgo medio se debe al accionar extorsivo delictivo asimétrico enfocado en establecimientos comerciales formales y droguerías en la subregión de los Montes de María, exigiendo mitigar la visibilidad de las marcas corporativas en vehículos y personal en terreno.", fuente: "Defensoría del Pueblo SAT y Observatorio DNP" },
+  "Tolima":               { desc: "Ejes estratégicos de comunicación nacional (Ibagué–Espinal–Melgar) plenamente habilitados y bajo fuerte resguardo institucional de la policía de carreteras. El riesgo se categoriza en medio por el resurgimiento de amenazas e incursiones extorsivas aisladas de bandas delictivas en zonas rurales montañosas periféricas del sur del departamento (límites con la cordillera central).", fuente: "Observatorio DNP y Defensoría del Pueblo SAT" },
+  "Valle del Cauca":      { desc: "Zona compleja por delincuencia, atentados y extorsiones en Cali, Buenaventura, Jamundí y Tuluá. La Vía Panamericana hacia el Cauca permanece bajo vigilancia debido a recientes acciones de grupos armados en 2026, como el atentado en Puerto Tejada, reforzándose la presencia militar y los controles. Además, el eje hacia Buenaventura sufre bloqueos comunitarios recurrentes que afectan el transporte de carga farmacéutica.", fuente: "Defensoría del Pueblo SAT y DNP" },
+  "Vaupés":               { desc: "Casco urbano de Mitú seguro frente a confrontaciones armadas abiertas o afectación violenta directa a la población civil. El departamento carece de red vial de interconexión terrestre con el interior del país, por lo que el riesgo de afectación logística es alto por aislamiento geográfico, operando visitas presenciales únicamente mediante nexos aéreos directos.", fuente: "Defensoría del Pueblo SAT y Observatorio DNP" },
+  "Vichada":              { desc: "Baja incidencia delictiva armada directa contra el personal de visitas civiles en el centro urbano de Puerto Carreño. Se presenta un entorno con tránsito libre pero severamente limitado por las precarias condiciones de la infraestructura vial de tierra de la llanura oriental, la cual resulta intransitable de manera total durante la temporada invernal alta por inundaciones.", fuente: "Observatorio DNP e Informes Técnicos de Transitabilidad Regional" }
+};
+
+// ── INIT MAP ─────────────────────────────────────────────────────────────────
+const map = L.map('map', { center:[5.5, -72.8], zoom:6 });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution:'© OpenStreetMap contributors', maxZoom:18
+}).addTo(map);
+
+// ── QR ────────────────────────────────────────────────────────────────────────
+new QRCode(document.getElementById("qrcode"), {
+  text: "https://wa.me/573108600132",
+  width: 76, height: 76,
+  colorDark:"#000000", colorLight:"#ffffff",
+  correctLevel: QRCode.CorrectLevel.H
+});
+
+// Llenar select de filtro flotante en el mapa
+const mapSelect = document.getElementById('map-dept-select');
+Object.keys(DEPT_INFO).sort().forEach(d => {
+  const opt = document.createElement('option');
+  opt.value = d;
+  opt.textContent = d;
+  mapSelect.appendChild(opt);
+});
+
+// ── MARCADORES DE TIPO PIN EN LOS 33 DEPARTAMENTOS (Color dinámico por nivel de riesgo) ──
+const DEPT_LABEL_COLOR = "#042B0B";
+const deptLayers = {};
+const deptMarkersArray = [];
+
+Object.entries(DEPT_INFO).forEach(([deptName, info]) => {
+  const deptRisk   = DEPT_RISK[deptName] || "bajo";
+  const pinColor   = COLORS[deptRisk];
+  const riskLabels = { alto:"🔴 RIESGO ALTO", medio:"🟡 RIESGO MEDIO", bajo:"🟢 RIESGO BAJO" };
+  const riskBg     = { alto:"#fdeee5", medio:"#fdf6e0", bajo:"#edf0e8" };
+  const riskBorder = { alto:"#E05A1A", medio:"#E8B84B", bajo:"#7D8C6B" };
+  const riskText   = { alto:"#8b2500", medio:"#7a5200", bajo:"#3a4a2f" };
+  const descData   = DEPT_DESC[deptName] || { desc: "Sin información analítica disponible.", fuente: "Dirección de Seguridad Corporativa SOCOPAC" };
+
+  const icon = L.divIcon({
+    className: 'dept-pin-container',
+    html: `<svg class="dept-svg-pin" width="22" height="28" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.35));">
+            <path d="M12 0C5.37 0 0 5.37 0 12C0 21 12 32 12 32C12 32 24 21 24 12C24 5.37 18.63 0 12 0ZM12 16.5C9.51 16.5 7.5 14.49 7.5 12C7.5 9.51 9.51 7.5 12 7.5C14.49 7.5 16.5 9.51 16.5 12C16.5 14.49 14.49 16.5 12 16.5Z" fill="${pinColor}"/>
+           </svg>`,
+    iconSize: [22, 28],
+    iconAnchor: [11, 28]
+  });
+
+  const popupHTML = `
+    <div style="font-family:'Barlow Condensed',sans-serif; min-width:260px; max-width:300px;">
+      <div style="background:${pinColor}; color:#fff; padding:9px 13px; border-radius:8px 8px 0 0; font-size:15px; font-weight:800; letter-spacing:0.4px; text-transform:uppercase;">
+        ${deptName}
+        <div style="font-size:11px; font-weight:500; opacity:0.9; margin-top:2px; letter-spacing:0.2px;">Capital: ${info.capital}</div>
+      </div>
+      <div style="padding:8px 13px 4px; background:${riskBg[deptRisk]}; border-left:3px solid ${riskBorder[deptRisk]}; margin:0;">
+        <span style="font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:800; color:${riskText[deptRisk]}; text-transform:uppercase; letter-spacing:0.5px;">${riskLabels[deptRisk]}</span>
+      </div>
+      <div style="padding:9px 13px 6px; font-family:'Barlow',sans-serif; font-size:11.5px; color:#333; line-height:1.55;">
+        ${descData.desc}
+      </div>
+      <div style="padding:5px 13px 9px; font-family:'Barlow',sans-serif; font-size:10px; color:#777; font-style:italic; border-top:1px solid #eee;">
+        (Fuente: ${descData.fuente})
+      </div>
+    </div>`;
+
+  const marker = L.marker([info.lat, info.lng], { zIndexOffset: -200 })
+    .setIcon(icon)
+    .addTo(map)
+    .bindTooltip(deptName, {
+      permanent: false,
+      direction: 'top',
+      className: 'dept-tooltip',
+      offset: [0, -28]
+    })
+    .bindPopup(popupHTML, { maxWidth: 320 });
+
+  marker._deptPinColor = pinColor;
+
+  // Evento click para abrir información y hacer zoom dinámico sobre el departamento
+  marker.on('click', () => {
+    if (DEPT_BOUNDS[deptName]) {
+      map.fitBounds(L.latLngBounds(DEPT_BOUNDS[deptName]), { padding:[40,40], animate:true });
+    } else {
+      map.setView([info.lat, info.lng], 9, { animate:true });
+    }
+  });
+
+  deptMarkersArray.push(marker);
+
+  if (DEPT_BOUNDS[deptName]) {
+    deptLayers[deptName] = { bounds: L.latLngBounds(DEPT_BOUNDS[deptName]) };
+  }
+});
+
+// Evento select del mapa
+mapSelect.addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (!val) return;
+  if (DEPT_BOUNDS[val]) {
+    map.fitBounds(L.latLngBounds(DEPT_BOUNDS[val]), { padding:[40,40], animate:true });
+  } else if (DEPT_INFO[val]) {
+    map.setView([DEPT_INFO[val].lat, DEPT_INFO[val].lng], 9, { animate:true });
+  }
+});
+
+// ── BANNERS ───────────────────────────────────────────────────────────────────
+['alto','medio','bajo'].forEach(risk => {
+  const banner = document.createElement('div');
+  banner.className = `info-banner ${risk}`;
+  banner.textContent = MEDIDAS[risk];
+  document.getElementById(`content-${risk}`).appendChild(banner);
+});
+
+// ── MARKERS POR TIENDA ────────────────────────────────────────────────────────
+const cityMarkers = {};
+const deptsData = { alto:{}, medio:{}, bajo:{} };
+const storeMarkersArray = [];
+
+Object.entries(STORES).forEach(([city, stores]) => {
+  const risk   = CITY_RISK[city];
+  const dept   = CITY_DEPT[city];
+  const col    = COLORS[risk];
+  const cityCenter = CITY_COORDS[city];
+
+  if (!deptsData[risk][dept]) deptsData[risk][dept] = { totalPoints:0, cities:[] };
+  deptsData[risk][dept].totalPoints += stores.length;
+  deptsData[risk][dept].cities.push({ city, stores, coords: cityCenter, dept });
+
+  const allMarkers = [];
+
+  stores.forEach((store, index) => {
+    const sc = (STORE_COORDS[city] && STORE_COORDS[city][index])
+      ? STORE_COORDS[city][index]
+      : { lat: cityCenter[0] + (index * 0.0012), lng: cityCenter[1] + (index * 0.0012), cai: "Sin información" };
+
+    const storeCoords = [sc.lat, sc.lng];
+
+    const icon = L.divIcon({
+      className:'',
+      html:`<div class="custom-marker" style="background:${col}; width:14px; height:14px;"></div>`,
+      iconSize:[14,14], iconAnchor:[7,7], popupAnchor:[0,-8]
+    });
+
+    const popupHTML = `
+      <div class="popup-header" style="background:${col}">
+        ${store.name}
+        <div class="popup-sub">${city} (${dept}) &nbsp;·&nbsp; ${CITY_REP[city]}</div>
+      </div>
+      <div class="popup-medidas ${risk}">${MEDIDAS[risk]}</div>
+      <div class="popup-rows">
+        <div class="popup-row">
+          <span class="popup-dname">Dirección:</span>
+          <span class="popup-addr">${store.addr}</span>
+        </div>
+        <div class="popup-row">
+          <span class="popup-dname">🚔 Cerca de aquí se encuentran estos CAIs:</span>
+          <span class="popup-addr">${sc.cai}</span>
+        </div>
+      </div>`;
+
+    const m = L.marker(storeCoords, {icon})
+      .addTo(map)
+      .bindPopup(popupHTML, {maxWidth:340});
+      
+    allMarkers.push({ marker:m, coords:storeCoords });
+    storeMarkersArray.push(m);
+  });
+
+  cityMarkers[city] = { allMarkers, coords: cityCenter };
+});
+
+// ── CONTROL DE PERSPECTIVA DE TAMAÑO SEGÚN EL ZOOM ─────────────────────────────
+map.on('zoomend', () => {
+  const currentZoom = map.getZoom();
+  
+  // Calcular tamaños proporcionales basados en el nivel de zoom
+  let pinW = 22, pinH = 28;
+  let storeSize = 14;
+
+  if (currentZoom <= 6) {
+    pinW = 12; pinH = 16;
+    storeSize = 6;
+  } else if (currentZoom === 7) {
+    pinW = 16; pinH = 21;
+    storeSize = 9;
+  } else if (currentZoom === 8) {
+    pinW = 19; pinH = 25;
+    storeSize = 11;
+  } else if (currentZoom >= 12) {
+    pinW = 26; pinH = 34;
+    storeSize = 18;
+  }
+
+  // Escalar Pines de Departamento
+  deptMarkersArray.forEach(marker => {
+    const nextIcon = L.divIcon({
+      className: 'dept-pin-container',
+      html: `<svg class="dept-svg-pin" width="${pinW}" height="${pinH}" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 0C5.37 0 0 5.37 0 12C0 21 12 32 12 32C12 32 24 21 24 12C24 5.37 18.63 0 12 0ZM12 16.5C9.51 16.5 7.5 14.49 7.5 12C7.5 9.51 9.51 7.5 12 7.5C14.49 7.5 16.5 9.51 16.5 12C16.5 14.49 14.49 16.5 12 16.5Z" fill="${marker._deptPinColor || DEPT_LABEL_COLOR}"/>
+             </svg>`,
+      iconSize: [pinW, pinH],
+      iconAnchor: [pinW / 2, pinH]
+    });
+    marker.setIcon(nextIcon);
+    if(marker.getTooltip()) {
+      marker.getTooltip().options.offset = [0, -pinH];
+    }
+  });
+
+  // Escalar Marcadores de Direcciones de Tienda
+  storeMarkersArray.forEach(marker => {
+    const htmlEl = marker.getElement();
+    if (htmlEl) {
+      const innerDiv = htmlEl.querySelector('.custom-marker');
+      if (innerDiv) {
+        innerDiv.style.width = `${storeSize}px`;
+        innerDiv.style.height = `${storeSize}px`;
+        htmlEl.style.width = `${storeSize}px`;
+        htmlEl.style.height = `${storeSize}px`;
+        // Ajustar el anclaje físico para que mantenga el centro real
+        htmlEl.style.marginLeft = `-${storeSize / 2}px`;
+        htmlEl.style.marginTop = `-${storeSize / 2}px`;
+      }
+    }
+  });
+});
+
+// Ejecutar una vez al inicio para validar escala inicial
+map.fire('zoomend');
+
+// ── PANEL LATERAL ─────────────────────────────────────────────────────────────
+Object.keys(deptsData).forEach(risk => {
+  const panel = document.getElementById(`content-${risk}`);
+
+  Object.entries(deptsData[risk]).forEach(([deptName, deptObj]) => {
+    const deptCard = document.createElement('div');
+    deptCard.className = `dept-card ${risk}`;
+
+    deptCard.innerHTML = `
+      <div class="dept-header" data-dept="${deptName}">
+        <span class="dept-name">
+          📍 Dpto: ${deptName}
+          <span class="zoom-hint">🔍 ver zona</span>
+        </span>
+        <span class="dept-count">${deptObj.totalPoints} pts</span>
+      </div>
+      <div class="dept-body"></div>
+    `;
+
+    deptCard.querySelector('.dept-header').addEventListener('click', () => {
+      if (DEPT_BOUNDS[deptName]) {
+        map.fitBounds(L.latLngBounds(DEPT_BOUNDS[deptName]), { padding:[30,30], animate:true, maxZoom:9 });
+      }
+    });
+
+    const deptBody = deptCard.querySelector('.dept-body');
+
+    deptObj.cities.forEach(c => {
+      const muniBox = document.createElement('div');
+      muniBox.className = 'muni-mini-box';
+      muniBox.innerHTML = `
+        <div class="muni-top-info">
+          <span class="muni-name" data-city="${c.city}">${c.city}</span>
+          <span class="muni-rep">${CITY_REP[c.city]}</span>
+          <span class="muni-pts">${c.stores.length} pts</span>
+        </div>
+        <div class="store-list">
+          ${c.stores.map((s,i) => {
+            const isRestricted = (c.city === "TIMBIO" || c.city === "PIENDAMO"|| c.city === "SANTANDER DE QUILICHAO"|| c.city === "ARAUCA");
+            const statusText = isRestricted ? "❌ Restringido" : "✅ Aprobado";
+            const statusColor = isRestricted ? "var(--alto)" : "var(--bajo)";
+
+            return `
+            <div class="store-row" data-city="${c.city}" data-idx="${i}" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding-right: 8px;">
+              <div style="display: flex; flex-direction: column;">
+                <span class="store-name">${s.name}</span>
+                <span class="store-addr">${s.addr}</span>
+              </div>
+              <span class="status-indicator" style="font-family: var(--font-display); font-size: 11px; font-weight: 700; color: ${statusColor}; text-transform: uppercase; flex-shrink: 0; margin-left: 10px;">
+                ${statusText}
+              </span>
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+
+      muniBox.querySelector('.muni-name').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const markers = cityMarkers[c.city].allMarkers;
+        if (markers.length === 1) {
+          map.setView(markers[0].coords, 15, {animate:true});
+        } else {
+          const bounds = L.latLngBounds(markers.map(m => m.coords));
+          map.fitBounds(bounds, {padding:[60,60], animate:true, maxZoom:15});
+        }
+      });
+
+      muniBox.querySelectorAll('.store-row').forEach(row => {
+        row.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const city = row.dataset.city;
+          const idx = parseInt(row.dataset.idx);
+          const { marker, coords } = cityMarkers[city].allMarkers[idx];
+          map.setView(coords, 15, { animate:true });
+          setTimeout(() => marker.openPopup(), 300);
+        });
+      });
+
+      deptBody.appendChild(muniBox);
+    });
+
+    panel.appendChild(deptCard);
+  });
+});
+
+function switchTab(riskType) {
+  document.querySelectorAll('.risk-tab').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.risk-content').forEach(panel => panel.classList.remove('active'));
+  
+  const activePanel = document.getElementById(`content-${riskType}`);
+  if (activePanel) activePanel.classList.add('active');
+  
+  const activeBtn = Array.from(document.querySelectorAll('.risk-tab')).find(b => b.getAttribute('onclick').includes(riskType));
+  if (activeBtn) activeBtn.classList.add('active');
+
+  const securityText = document.getElementById('security-text');
+  if (securityText && CORP_RECOMMENDATIONS[riskType]) {
+    securityText.innerHTML = CORP_RECOMMENDATIONS[riskType];
+  }
+}
+
+switchTab('alto');
+
+// ── BOTÓN DE REFERENCIAS TÉCNICAS ───────────────────────────────────────────
+(function() {
+  const techRefControl = document.getElementById('techRefControl');
+  const techRefBtn = document.getElementById('techRefBtn');
+  const techRefModal = document.getElementById('techRefModal');
+
+  if (!techRefControl || !techRefBtn || !techRefModal) return;
+
+  techRefBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    techRefModal.classList.toggle('active');
+  });
+
+  techRefModal.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!techRefControl.contains(e.target)) {
+      techRefModal.classList.remove('active');
+    }
+  });
+})();
+
+// ── ÍCONO DE CONTACTOS (Corporativo CECOM + Líneas Nacionales) ─────────────
+(function() {
+  const securityBox = document.getElementById('securityBox');
+  const contactsWrap = document.getElementById('contactsIconWrap');
+  const contactsBtn = document.getElementById('contactsBtn');
+  const contactsPopover = document.getElementById('contactsPopover');
+
+  if (!securityBox || !contactsWrap || !contactsBtn || !contactsPopover) return;
+
+  // Desplazamiento vertical fijo del popover respecto al cuadro de
+  // recomendaciones (top:14px del ícono + top:42px del propio popover,
+  // definidos en el CSS) más un pequeño margen inferior de respiro.
+  const TOP_OFFSET = 56;
+  const BOTTOM_GAP = 16;
+
+  function syncPopoverHeight() {
+    const boxHeight = securityBox.getBoundingClientRect().height;
+    const available = boxHeight - TOP_OFFSET - BOTTOM_GAP;
+    contactsPopover.style.maxHeight = Math.max(160, available) + 'px';
+  }
+
+  contactsBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!contactsPopover.classList.contains('active')) {
+      syncPopoverHeight();
+    }
+    contactsPopover.classList.toggle('active');
+  });
+
+  contactsPopover.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!contactsWrap.contains(e.target)) {
+      contactsPopover.classList.remove('active');
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (contactsPopover.classList.contains('active')) {
+      syncPopoverHeight();
+    }
+  });
+})();
+</script>
+</body>
+</html>
