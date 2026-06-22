@@ -1396,7 +1396,7 @@ Object.keys(deptsData).forEach(risk => {
         </div>
         <div class="store-list">
           ${c.stores.map((s,i) => {
-            const isRestricted = (c.city === "TIMBIO" || c.city === "PIENDAMO"|| c.city === "SANTANDER DE QUILICHAO"|| c.city === "ARAUCA");
+            const isRestricted = (c.city === "TIMBIO" || c.city === "PIENDAMO"|| c.city === "SANTANDER DE QUILICHAO"|| c.city === "ARAUCA"|| c.city === "SARAVENA"|| c.city === "TAME"|| c.city === "ARAUQUITA"|| c.city === "MIRANDA"|| c.city === "OCAÑA"|| c.city === "JAMUNDI"|| c.city === "FLORIDA"|| c.city === "POPAYAN"|| c.city === "AGUACHICA"|| c.city === "CURUMANI"|| c.city === "BARRANCABERMEJA"|| c.city === "DAGUA"|| c.city === "SAN GIL"|| c.city === "SOCORRO");
             const statusText = isRestricted ? "❌ Restringido" : "✅ Aprobado";
             const statusColor = isRestricted ? "var(--alto)" : "var(--bajo)";
 
